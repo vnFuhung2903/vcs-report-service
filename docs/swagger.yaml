@@ -1,0 +1,66 @@
+basePath: /
+definitions:
+  dto.APIResponse:
+    properties:
+      code:
+        type: string
+      data: {}
+      error:
+        type: string
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+host: localhost:8084
+info:
+  contact: {}
+  description: Container Management System API
+  title: VCS SMS API
+  version: "1.0"
+paths:
+  /report/mail:
+    get:
+      description: Generates a container uptime/downtime report and sends it to the
+        provided email address
+      parameters:
+      - description: Recipient email address
+        in: query
+        name: email
+        required: true
+        type: string
+      - description: Start date (e.g. 2006-01-02)
+        in: query
+        name: start_time
+        required: true
+        type: string
+      - description: End date (defaults to current time)
+        in: query
+        name: end_time
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Report emailed successfully
+          schema:
+            $ref: '#/definitions/dto.APIResponse'
+        "400":
+          description: Invalid input or time range
+          schema:
+            $ref: '#/definitions/dto.APIResponse'
+        "500":
+          description: Failed to retrieve data or send email
+          schema:
+            $ref: '#/definitions/dto.APIResponse'
+      security:
+      - BearerAuth: []
+      summary: Send container status report via email
+      tags:
+      - report
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
