@@ -11,26 +11,26 @@ type AuthEnv struct {
 }
 
 type ElasticsearchEnv struct {
-	ElasticsearchAddress string `mapstructure:"ELASTICSEARCH_ADDRESS"`
+	ElasticsearchAddress string
 }
 
 type GomailEnv struct {
-	MailUsername string `mapstructure:"MAIL_USERNAME"`
-	MailPassword string `mapstructure:"MAIL_PASSWORD"`
+	MailUsername string
+	MailPassword string
 }
 
 type RedisEnv struct {
-	RedisAddress  string `mapstructure:"REDIS_ADDRESS"`
-	RedisPassword string `mapstructure:"REDIS_PASSWORD"`
-	RedisDb       int    `mapstructure:"REDIS_DB"`
+	RedisAddress  string
+	RedisPassword string
+	RedisDb       int
 }
 
 type LoggerEnv struct {
-	Level      string `mapstructure:"ZAP_LEVEL"`
-	FilePath   string `mapstructure:"ZAP_FILEPATH"`
-	MaxSize    int    `mapstructure:"ZAP_MAXSIZE"`
-	MaxAge     int    `mapstructure:"ZAP_MAXAGE"`
-	MaxBackups int    `mapstructure:"ZAP_MAXBACKUPS"`
+	Level      string
+	FilePath   string
+	MaxSize    int
+	MaxAge     int
+	MaxBackups int
 }
 
 type Env struct {
