@@ -140,13 +140,13 @@ func (s *reportService) CalculateReportStatistic(statusList map[string][]dto.EsS
 func (s *reportService) GetEsStatus(ctx context.Context, limit int, startTime time.Time, endTime time.Time, order dto.SortOrder) (map[string][]dto.EsStatus, error) {
 	var body strings.Builder
 
-	ids, err := s.redisClient.Get(ctx, "containers")
+	containers, err := s.redisClient.Get(ctx, "containers")
 	if err != nil {
 		s.logger.Error("failed to get container ids from redis", zap.Error(err))
 		return nil, err
 	}
 
-	for _, id := range ids {
+	for _, container := range containers {
 		meta := map[string]string{"index": "sms_container"}
 		metaLine, _ := json.Marshal(meta)
 		body.Write(metaLine)
@@ -156,7 +156,7 @@ func (s *reportService) GetEsStatus(ctx context.Context, limit int, startTime ti
 			"query": map[string]interface{}{
 				"bool": map[string]interface{}{
 					"must": []interface{}{
-						map[string]interface{}{"term": map[string]string{"container_id.keyword": id}},
+						map[string]interface{}{"term": map[string]string{"container_id.keyword": container.ContainerId}},
 						map[string]interface{}{
 							"range": map[string]interface{}{
 								"last_updated": map[string]string{
@@ -211,7 +211,7 @@ func (s *reportService) GetEsStatus(ctx context.Context, limit int, startTime ti
 
 	results := make(map[string][]dto.EsStatus)
 	for i, response := range parsed.Responses {
-		containerId := ids[i]
+		containerId := containers[i].ContainerId
 		for _, hit := range response.Hits.Hits {
 			results[containerId] = append(results[containerId], hit.Source)
 		}
