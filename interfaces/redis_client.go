@@ -12,15 +12,15 @@ type IRedisClient interface {
 	Get(ctx context.Context, key string) ([]entities.ContainerWithStatus, error)
 }
 
-type RedisClient struct {
+type redisClient struct {
 	client *redis.Client
 }
 
 func NewRedisClient(client *redis.Client) IRedisClient {
-	return &RedisClient{client: client}
+	return &redisClient{client: client}
 }
 
-func (c *RedisClient) Get(ctx context.Context, key string) ([]entities.ContainerWithStatus, error) {
+func (c *redisClient) Get(ctx context.Context, key string) ([]entities.ContainerWithStatus, error) {
 	val, err := c.client.Get(ctx, key).Result()
 	if err == redis.Nil {
 		return []entities.ContainerWithStatus{}, nil

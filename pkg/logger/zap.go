@@ -20,7 +20,7 @@ type ILogger interface {
 	With(fields ...zap.Field) ILogger
 }
 
-type Logger struct {
+type logger struct {
 	logger *zap.Logger
 }
 
@@ -28,14 +28,14 @@ var (
 	once sync.Once
 )
 
-func LoadLogger(env env.LoggerEnv) (logger *Logger, err error) {
+func LoadLogger(env env.LoggerEnv) (logger *logger, err error) {
 	once.Do(func() {
 		logger, err = initLogger(env)
 	})
 	return logger, err
 }
 
-func initLogger(env env.LoggerEnv) (*Logger, error) {
+func initLogger(env env.LoggerEnv) (*logger, error) {
 	level, err := zapcore.ParseLevel(env.Level)
 	if err != nil {
 		return nil, err
@@ -72,34 +72,34 @@ func initLogger(env env.LoggerEnv) (*Logger, error) {
 	consoleCore := zapcore.NewCore(zapcore.NewConsoleEncoder(encoderCfg), zapcore.AddSync(os.Stdout), level)
 	core := zapcore.NewTee(fileCore, consoleCore)
 
-	logger := &Logger{logger: zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1), zap.AddStacktrace(zapcore.ErrorLevel))}
+	logger := &logger{logger: zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1), zap.AddStacktrace(zapcore.ErrorLevel))}
 	return logger, nil
 }
 
-func (l *Logger) Debug(msg string, fields ...zap.Field) {
+func (l *logger) Debug(msg string, fields ...zap.Field) {
 	l.logger.Debug(msg, fields...)
 }
 
-func (l *Logger) Info(msg string, fields ...zap.Field) {
+func (l *logger) Info(msg string, fields ...zap.Field) {
 	l.logger.Info(msg, fields...)
 }
 
-func (l *Logger) Warn(msg string, fields ...zap.Field) {
+func (l *logger) Warn(msg string, fields ...zap.Field) {
 	l.logger.Warn(msg, fields...)
 }
 
-func (l *Logger) Error(msg string, fields ...zap.Field) {
+func (l *logger) Error(msg string, fields ...zap.Field) {
 	l.logger.Error(msg, fields...)
 }
 
-func (l *Logger) Fatal(msg string, fields ...zap.Field) {
+func (l *logger) Fatal(msg string, fields ...zap.Field) {
 	l.logger.Fatal(msg, fields...)
 }
 
-func (l *Logger) Sync() error {
+func (l *logger) Sync() error {
 	return l.logger.Sync()
 }
 
-func (l *Logger) With(fields ...zap.Field) ILogger {
-	return &Logger{logger: l.logger.With(fields...)}
+func (l *logger) With(fields ...zap.Field) ILogger {
+	return &logger{logger: l.logger.With(fields...)}
 }

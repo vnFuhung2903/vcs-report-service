@@ -16,7 +16,7 @@ type IReportkWorker interface {
 	Stop()
 }
 
-type ReportkWorker struct {
+type reportkWorker struct {
 	reportService services.IReportService
 	email         string
 	logger        logger.ILogger
@@ -33,7 +33,7 @@ func NewReportkWorker(
 	interval time.Duration,
 ) IReportkWorker {
 	ctx, cancel := context.WithCancel(context.Background())
-	return &ReportkWorker{
+	return &reportkWorker{
 		reportService: reportService,
 		email:         email,
 		logger:        logger,
@@ -44,17 +44,17 @@ func NewReportkWorker(
 	}
 }
 
-func (w *ReportkWorker) Start(numWorkers int) {
+func (w *reportkWorker) Start(numWorkers int) {
 	w.wg.Add(numWorkers)
 	go w.run()
 }
 
-func (w *ReportkWorker) Stop() {
+func (w *reportkWorker) Stop() {
 	w.cancel()
 	w.wg.Wait()
 }
 
-func (w *ReportkWorker) run() {
+func (w *reportkWorker) run() {
 	defer w.wg.Done()
 
 	ticker := time.NewTicker(w.interval)
@@ -71,7 +71,7 @@ func (w *ReportkWorker) run() {
 	}
 }
 
-func (w *ReportkWorker) report() {
+func (w *reportkWorker) report() {
 	endTime := time.Now()
 	startTime := endTime.Add(-w.interval)
 

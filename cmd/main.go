@@ -1,7 +1,9 @@
 package main
 
 import (
+	"context"
 	"log"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -19,6 +21,7 @@ import (
 	"github.com/vnFuhung2903/vcs-report-service/pkg/middlewares"
 	"github.com/vnFuhung2903/vcs-report-service/usecases/services"
 	"github.com/vnFuhung2903/vcs-report-service/usecases/workers"
+	"go.uber.org/zap"
 )
 
 // @title VCS SMS API
@@ -47,6 +50,7 @@ func main() {
 	esClient := interfaces.NewElasticsearchClient(esRawClient)
 
 	redisRawClient := databases.NewRedisFactory(env.RedisEnv).ConnectRedis()
+	defer redisRawClient.Close()
 	redisClient := interfaces.NewRedisClient(redisRawClient)
 
 	jwtMiddleware := middlewares.NewJWTMiddleware(env.AuthEnv)
@@ -60,24 +64,32 @@ func main() {
 		logger,
 		24*time.Hour,
 	)
-	reportWorker.Start(1)
+	reportWorker.Start(env.WorkerEnv.Count)
+	defer reportWorker.Stop()
 
 	r := gin.Default()
 	reportHandler.SetupRoutes(r)
 	r.GET("/swagger/*any", swagger.WrapHandler(swaggerFiles.Handler))
 
-	go func() {
-		quit := make(chan os.Signal, 1)
-		signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-		<-quit
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 
-		logger.Info("Shutting down...")
-		reportWorker.Stop()
-		os.Exit(0)
+	server := &http.Server{
+		Addr:    ":8084",
+		Handler: r,
+	}
+
+	go func() {
+		<-quit
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+		if err := server.Shutdown(ctx); err != nil {
+			logger.Error("HTTP server shutdown failed", zap.Error(err))
+		}
+		logger.Info("Report service stopped gracefully")
 	}()
-	if err := r.Run(":8084"); err != nil {
+
+	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		log.Fatalf("Failed to run service: %v", err)
-	} else {
-		logger.Info("Report service is running on port 8084")
 	}
 }

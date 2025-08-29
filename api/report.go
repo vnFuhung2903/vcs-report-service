@@ -10,16 +10,16 @@ import (
 	"github.com/vnFuhung2903/vcs-report-service/usecases/services"
 )
 
-type ReportHandler struct {
+type reportHandler struct {
 	reportService services.IReportService
 	jwtMiddleware middlewares.IJWTMiddleware
 }
 
-func NewReportHandler(reportService services.IReportService, jwtMiddleware middlewares.IJWTMiddleware) *ReportHandler {
-	return &ReportHandler{reportService, jwtMiddleware}
+func NewReportHandler(reportService services.IReportService, jwtMiddleware middlewares.IJWTMiddleware) *reportHandler {
+	return &reportHandler{reportService, jwtMiddleware}
 }
 
-func (h *ReportHandler) SetupRoutes(r *gin.Engine) {
+func (h *reportHandler) SetupRoutes(r *gin.Engine) {
 	reportRoutes := r.Group("/report", h.jwtMiddleware.RequireScope("report:mail"))
 	{
 		reportRoutes.GET("/mail", h.SendEmail)
@@ -39,7 +39,7 @@ func (h *ReportHandler) SetupRoutes(r *gin.Engine) {
 // @Failure 500 {object} dto.APIResponse "Failed to retrieve data or send email"
 // @Security BearerAuth
 // @Router /report/mail [get]
-func (h *ReportHandler) SendEmail(c *gin.Context) {
+func (h *reportHandler) SendEmail(c *gin.Context) {
 	var req dto.ReportRequest
 	if err := c.ShouldBindQuery(&req); err != nil {
 		c.JSON(http.StatusBadRequest, dto.APIResponse{

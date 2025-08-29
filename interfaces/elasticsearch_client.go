@@ -11,14 +11,14 @@ type IElasticsearchClient interface {
 	Do(ctx context.Context, req esapi.Request) (*esapi.Response, error)
 }
 
-type ElasticsearchClient struct {
+type elasticsearchClient struct {
 	client *elasticsearch.Client
 }
 
-func NewElasticsearchClient(client *elasticsearch.Client) *ElasticsearchClient {
-	return &ElasticsearchClient{client: client}
+func NewElasticsearchClient(client *elasticsearch.Client) *elasticsearchClient {
+	return &elasticsearchClient{client: client}
 }
 
-func (c *ElasticsearchClient) Do(ctx context.Context, req esapi.Request) (*esapi.Response, error) {
+func (c *elasticsearchClient) Do(ctx context.Context, req esapi.Request) (*esapi.Response, error) {
 	return req.Do(ctx, c.client)
 }

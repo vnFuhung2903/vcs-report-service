@@ -9,21 +9,21 @@ type IRedisFactory interface {
 	ConnectRedis() *redis.Client
 }
 
-type RedisFactory struct {
+type redisFactory struct {
 	Address  string
 	Password string
 	Db       int
 }
 
 func NewRedisFactory(env env.RedisEnv) IRedisFactory {
-	return &RedisFactory{
+	return &redisFactory{
 		Address:  env.RedisAddress,
 		Password: env.RedisPassword,
 		Db:       env.RedisDb,
 	}
 }
 
-func (f *RedisFactory) ConnectRedis() *redis.Client {
+func (f *redisFactory) ConnectRedis() *redis.Client {
 	return redis.NewClient(&redis.Options{
 		Addr:     f.Address,
 		Password: f.Password,

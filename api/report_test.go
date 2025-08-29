@@ -24,7 +24,7 @@ type ReportHandlerSuite struct {
 	ctrl              *gomock.Controller
 	mockReportService *services.MockIReportService
 	mockJWTMiddleware *middlewares.MockIJWTMiddleware
-	handler           *ReportHandler
+	handler           *reportHandler
 	router            *gin.Engine
 }
 
