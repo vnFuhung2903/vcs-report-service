@@ -98,7 +98,7 @@ func (s *reportService) SendEmail(ctx context.Context, to string, totalCount int
 		return err
 	}
 
-	s.logger.Info("Report sent successfully", zap.String("emailTo", to), zap.String("subject", msg))
+	s.logger.Info("report sent successfully", zap.String("emailTo", to), zap.String("subject", msg))
 	return nil
 }
 

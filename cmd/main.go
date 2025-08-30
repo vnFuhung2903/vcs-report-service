@@ -64,7 +64,7 @@ func main() {
 		logger,
 		24*time.Hour,
 	)
-	reportWorker.Start(env.WorkerEnv.Count)
+	reportWorker.Start()
 	defer reportWorker.Stop()
 
 	r := gin.Default()

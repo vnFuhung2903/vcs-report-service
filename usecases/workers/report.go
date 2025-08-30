@@ -12,7 +12,7 @@ import (
 )
 
 type IReportkWorker interface {
-	Start(numWorkers int)
+	Start()
 	Stop()
 }
 
@@ -44,8 +44,8 @@ func NewReportkWorker(
 	}
 }
 
-func (w *reportkWorker) Start(numWorkers int) {
-	w.wg.Add(numWorkers)
+func (w *reportkWorker) Start() {
+	w.wg.Add(1)
 	go w.run()
 }
 
@@ -93,5 +93,11 @@ func (w *reportkWorker) report() {
 		w.logger.Error("failed to email daily report", zap.Error(err))
 		return
 	}
-	w.logger.Info("daily report emailed successfully")
+
+	w.logger.Info("daily report sent successfully",
+		zap.Time("start", startTime),
+		zap.Time("end", endTime),
+		zap.Int("onCount", onCount),
+		zap.Int("offCount", offCount),
+	)
 }

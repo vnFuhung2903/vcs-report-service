@@ -86,7 +86,7 @@ func (s *ReportHandlerSuite) TestSendEmail() {
 	s.mockLogger.EXPECT().Info("daily report emailed successfully").AnyTimes()
 	s.mockLogger.EXPECT().Info("daily report workers stopped").AnyTimes()
 
-	s.reportWorker.Start(1)
+	s.reportWorker.Start()
 	time.Sleep(3 * time.Second)
 
 	s.reportWorker.Stop()
@@ -100,7 +100,7 @@ func (s *ReportHandlerSuite) TestSendEmailGetEsStatusError() {
 	s.mockLogger.EXPECT().Error("failed to retrieve elasticsearch status", gomock.Any()).AnyTimes()
 	s.mockLogger.EXPECT().Info("daily report workers stopped").AnyTimes()
 
-	s.reportWorker.Start(1)
+	s.reportWorker.Start()
 	time.Sleep(3 * time.Second)
 
 	s.reportWorker.Stop()
@@ -127,7 +127,7 @@ func (s *ReportHandlerSuite) TestSendEmailGetEsStatusOverlapError() {
 	s.mockLogger.EXPECT().Error("failed to retrieve elasticsearch status", gomock.Any()).AnyTimes()
 	s.mockLogger.EXPECT().Info("daily report workers stopped").AnyTimes()
 
-	s.reportWorker.Start(1)
+	s.reportWorker.Start()
 	time.Sleep(3 * time.Second)
 
 	s.reportWorker.Stop()
@@ -166,7 +166,7 @@ func (s *ReportHandlerSuite) TestSendEmailSendEmailServiceError() {
 	s.mockLogger.EXPECT().Error("failed to email daily report", gomock.Any()).AnyTimes()
 	s.mockLogger.EXPECT().Info("daily report workers stopped").AnyTimes()
 
-	s.reportWorker.Start(1)
+	s.reportWorker.Start()
 	time.Sleep(3 * time.Second)
 
 	s.reportWorker.Stop()
