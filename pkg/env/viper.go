@@ -7,7 +7,7 @@ import (
 )
 
 type AuthEnv struct {
-	JWTSecret string `mapstructure:"JWT_SECRET_KEY"`
+	JWTSecret string
 }
 
 type ElasticsearchEnv struct {
@@ -25,10 +25,6 @@ type RedisEnv struct {
 	RedisDb       int
 }
 
-type WorkerEnv struct {
-	Count int
-}
-
 type LoggerEnv struct {
 	Level      string
 	FilePath   string
@@ -42,7 +38,6 @@ type Env struct {
 	ElasticsearchEnv ElasticsearchEnv
 	GomailEnv        GomailEnv
 	RedisEnv         RedisEnv
-	WorkerEnv        WorkerEnv
 	LoggerEnv        LoggerEnv
 }
 
@@ -91,13 +86,6 @@ func LoadEnv() (*Env, error) {
 		return nil, errors.New("redis environment variables are empty")
 	}
 
-	workerEnv := WorkerEnv{
-		Count: v.GetInt("REPORT_WORKER_COUNT"),
-	}
-	if workerEnv.Count <= 0 {
-		return nil, errors.New("worker environment variables are empty")
-	}
-
 	loggerEnv := LoggerEnv{
 		Level:      v.GetString("ZAP_LEVEL"),
 		FilePath:   v.GetString("ZAP_FILEPATH"),
@@ -114,7 +102,6 @@ func LoadEnv() (*Env, error) {
 		ElasticsearchEnv: elasticsearchEnv,
 		GomailEnv:        gomailEnv,
 		RedisEnv:         redisEnv,
-		WorkerEnv:        workerEnv,
 		LoggerEnv:        loggerEnv,
 	}, nil
 }

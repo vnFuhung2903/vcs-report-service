@@ -57,7 +57,6 @@ func TestReportHandlerSuite(t *testing.T) {
 
 func (s *ReportHandlerSuite) TestSendEmail() {
 	baseTime := time.Now()
-	endTime := baseTime
 	startTime := baseTime.Add(-4 * time.Hour)
 
 	statusList := map[string][]dto.EsStatus{
@@ -95,7 +94,6 @@ func (s *ReportHandlerSuite) TestSendEmail() {
 	params := url.Values{}
 	params.Set("email", "test@example.com")
 	params.Set("start_time", startTime.UTC().Format("2006-01-02"))
-	params.Set("end_time", endTime.UTC().Format("2006-01-02"))
 
 	req := httptest.NewRequest("GET", "/report/mail?"+params.Encode(), nil)
 	w := httptest.NewRecorder()
@@ -111,7 +109,7 @@ func (s *ReportHandlerSuite) TestSendEmail() {
 }
 
 func (s *ReportHandlerSuite) TestSendEmailInvalidQueryBinding() {
-	req := httptest.NewRequest("GET", "/report/mail?start_time=invalid-datetime", nil)
+	req := httptest.NewRequest("GET", "/report/mail", nil)
 	w := httptest.NewRecorder()
 
 	s.router.ServeHTTP(w, req)
@@ -122,7 +120,17 @@ func (s *ReportHandlerSuite) TestSendEmailInvalidQueryBinding() {
 	s.NoError(err)
 	s.NotEmpty(response.Error)
 
-	req = httptest.NewRequest("GET", "/report/mail?start_time=2006-01-02&end_time=invalid-datetime", nil)
+	req = httptest.NewRequest("GET", "/report/mail?email=test@example.com&start_time=invalid-datetime", nil)
+	w = httptest.NewRecorder()
+
+	s.router.ServeHTTP(w, req)
+	s.Equal(http.StatusBadRequest, w.Code)
+
+	err = json.Unmarshal(w.Body.Bytes(), &response)
+	s.NoError(err)
+	s.NotEmpty(response.Error)
+
+	req = httptest.NewRequest("GET", "/report/mail?email=test@example.com&start_time=2006-01-02&end_time=invalid-datetime", nil)
 	w = httptest.NewRecorder()
 	s.router.ServeHTTP(w, req)
 	s.Equal(http.StatusBadRequest, w.Code)
@@ -133,7 +141,7 @@ func (s *ReportHandlerSuite) TestSendEmailInvalidQueryBinding() {
 }
 
 func (s *ReportHandlerSuite) TestSendEmailInvalidDateRange() {
-	req := httptest.NewRequest("GET", "/report/mail?email=test@example.com&start_time=2024-01-01&end_time=2023-01-02s", nil)
+	req := httptest.NewRequest("GET", "/report/mail?email=test@example.com&start_time=2024-01-01&end_time=2023-01-02", nil)
 	w := httptest.NewRecorder()
 
 	s.router.ServeHTTP(w, req)

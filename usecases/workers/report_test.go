@@ -83,7 +83,7 @@ func (s *ReportHandlerSuite) TestSendEmail() {
 		SendEmail(gomock.Any(), "test@example.com", 2, 1, 1, 50.0, gomock.Any(), gomock.Any()).
 		Return(nil)
 
-	s.mockLogger.EXPECT().Info("daily report emailed successfully").AnyTimes()
+	s.mockLogger.EXPECT().Info("daily report sent successfully", gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).AnyTimes()
 	s.mockLogger.EXPECT().Info("daily report workers stopped").AnyTimes()
 
 	s.reportWorker.Start()
