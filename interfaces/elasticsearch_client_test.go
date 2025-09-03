@@ -19,5 +19,5 @@ func TestElasticsearchClient(t *testing.T) {
 	esClient := NewElasticsearchClient(es)
 	req := esapi.InfoRequest{}
 	_, err = esClient.Do(context.Background(), req)
-	assert.Error(t, err)
+	assert.NoError(t, err)
 }
